@@ -1,4 +1,5 @@
 const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   entry: [
@@ -10,7 +11,7 @@ module.exports = {
     publicPath: '.'
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.jsx/,
         include: path.resolve('./src/components/'),
@@ -42,7 +43,12 @@ module.exports = {
       }
     ]
   },
+  plugins: [
+    new CopyPlugin([
+      { from: './src/devtools/*', to: './' ,flatten:true},
+    ]),
+  ],
   resolve: {
     extensions: ['.js', '.jsx', '.scss', '.css']
-  }
+  },
 };
