@@ -1,12 +1,8 @@
 {
   "manifest_version": 2,
-
   "name": "Dom count DevTools",
   "description": "Google Chrome DevTools Extension for analyzing DOM elements count",
   "version": "1.0",
-
-  "permissions": [
-    "*://*/*"
-  ],
+  "permissions": ["*://*/*"],
   "devtools_page": "devtools.html"
 }
