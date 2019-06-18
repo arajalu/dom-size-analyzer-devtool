@@ -1,0 +1,1 @@
+export const GET_DOM_DETAILS = 'GET_DOM_DETAILS';

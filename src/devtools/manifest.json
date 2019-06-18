@@ -4,5 +4,12 @@
   "description": "Google Chrome DevTools Extension for analyzing DOM elements count",
   "version": "1.0",
   "permissions": ["*://*/*"],
-  "devtools_page": "devtools.html"
+  "devtools_page": "devtools.html",
+  "web_accessible_resources": ["injectable.js"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["contentScript.js"]
+    }
+  ]
 }

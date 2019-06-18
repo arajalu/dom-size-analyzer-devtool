@@ -1,9 +1,16 @@
-import React, { Component } from "react";
-import { render } from "react-dom";
+import React, { Component } from 'react';
+import { render } from 'react-dom';
+
+import { GET_DOM_DETAILS } from '../constants/events';
 
 class App extends Component {
-  constructor() {
-    super();
+  componentDidMount() {
+    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+      console.log('sending event');
+      chrome.tabs.sendMessage(tabs[0].id, {
+        type: GET_DOM_DETAILS,
+      });
+    });
   }
 
   render() {
@@ -11,4 +18,4 @@ class App extends Component {
   }
 }
 
-render(<App />, document.getElementById("app"));
+render(<App />, document.getElementById('app'));
