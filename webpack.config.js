@@ -2,10 +2,14 @@ const path = require('path');
 const CopyPlugin = require('copy-webpack-plugin');
 
 module.exports = {
-  entry: [path.resolve('./src/components/index.jsx')],
+  entry: {
+    main: path.resolve('./src/components/index.jsx'),
+    injectable: path.resolve('./src/devtools/injectable.js'),
+    contentScript: path.resolve('./src/devtools/contentScript.js'),
+  },
   output: {
     path: path.resolve('./build/'),
-    filename: 'app.js',
+    filename: '[name].js',
     publicPath: '.',
   },
   module: {
@@ -38,9 +42,18 @@ module.exports = {
     ],
   },
   plugins: [
-    new CopyPlugin([{ from: './src/devtools/*', to: './', flatten: true }]),
+    new CopyPlugin([
+      { from: './src/devtools/manifest.json', to: './', flatten: true },
+      { from: './src/devtools/devtools.html', to: './', flatten: true },
+      { from: './src/devtools/index.html', to: './', flatten: true },
+      { from: './src/devtools/devtools.js', to: './', flatten: true },
+      { from: './src/devtools/backgroundScript.js', to: './', flatten: true },
+    ]),
   ],
   resolve: {
     extensions: ['.js', '.jsx', '.scss', '.css'],
+  },
+  optimization: {
+    minimize: false,
   },
 };
