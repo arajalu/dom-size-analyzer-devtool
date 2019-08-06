@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
 import StartPage from './StartPage';
+import DetailsPage from './DetailsPage';
 
 import { GET_DOM_DETAILS } from '../constants/events';
 
@@ -59,7 +60,7 @@ class App extends Component {
       case domInfoLoadingStates.INIT:
         return <StartPage getDOMdetails={this.getDOMdetails} />;
       case domInfoLoadingStates.SUCCESS:
-        return domData && JSON.stringify(domData);
+        return domData && <DetailsPage domData={domData} />;
       default:
         return null;
     }
