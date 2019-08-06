@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "description": "Google Chrome DevTools Extension for analyzing DOM elements count",
   "scripts": {
-    "//":"**** running production build due to following error while running in dev mode 'Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive'",
-    "webpack:watch": "webpack --config ./webpack.config.js  --watch", 
+    "//": "**** running production build due to following error while running in dev mode 'Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive'",
+    "webpack:watch": "webpack --config ./webpack.config.js  --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Anand Rajalu <arajalu@gmail.com>",
@@ -46,6 +46,8 @@
     "webpack-cli": "^3.3.2"
   },
   "dependencies": {
+    "@emotion/core": "^10.0.15",
+    "@emotion/styled": "^10.0.15",
     "react-redux": "^7.0.3",
     "redux": "^4.0.1",
     "redux-saga": "^1.0.2"

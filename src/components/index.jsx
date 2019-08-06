@@ -1,23 +1,27 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
+import StartPage from './StartPage';
 
 import { GET_DOM_DETAILS } from '../constants/events';
+
+const domInfoLoadingStates = {
+  INIT: null,
+  LOADING: 'loading',
+  SUCCESS: 'success',
+  ERROR: 'error',
+};
 
 class App extends Component {
   constructor(props) {
     super(props);
     this.state = {
       domData: null,
+      domInfoLoadingState: domInfoLoadingStates.INIT,
     };
+    this.getDOMdetails = this.getDOMdetails.bind(this);
   }
 
   componentDidMount() {
-    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-      console.log('sending event');
-      chrome.tabs.sendMessage(tabs[0].id, {
-        type: GET_DOM_DETAILS,
-      });
-    });
     const backgroundPageConnection = chrome.runtime.connect({
       name: 'devtools-page',
     });
@@ -25,14 +29,44 @@ class App extends Component {
       // Data has arrived in devtools page!!
       console.log('event recvd!!!', message);
       const { data: domData } = message || {};
-      this.setState({ domData });
+      this.setState({
+        domInfoLoadingState: domInfoLoadingStates.SUCCESS,
+        domData,
+      });
     });
   }
 
-  render() {
-    const { domData } = this.state;
+  getDOMdetails() {
+    function sendGetDOMdetailsEvent() {
+      chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+        console.log('sending get dom details event');
+        chrome.tabs.sendMessage(tabs[0].id, {
+          type: GET_DOM_DETAILS,
+        });
+      });
+    }
+    this.setState(
+      { domInfoLoadingState: domInfoLoadingStates.LOADING },
+      sendGetDOMdetailsEvent,
+    );
+  }
 
-    return domData ? JSON.stringify(domData) : <div>TESTs</div>;
+  renderView() {
+    const { domData, domInfoLoadingState } = this.state;
+    switch (domInfoLoadingState) {
+      case domInfoLoadingStates.LOADING:
+        return 'loading...';
+      case domInfoLoadingStates.INIT:
+        return <StartPage getDOMdetails={this.getDOMdetails} />;
+      case domInfoLoadingStates.SUCCESS:
+        return domData && JSON.stringify(domData);
+      default:
+        return null;
+    }
+  }
+
+  render() {
+    return this.renderView();
   }
 }
 
