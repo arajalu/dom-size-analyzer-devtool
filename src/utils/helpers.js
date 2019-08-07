@@ -3,16 +3,18 @@
  * @param {DOMnode} node
  * @returns {object}
  */
-function serializeDOMnode(node) {
+function serializeDOMnode(node = {}) {
+  const { attributes = {} } = node;
   const obj = {
     nodeType: node.nodeType,
-  };
-  obj.tagName = node.tagName;
-  obj.nodeName = node.nodeName;
-  obj.nodeValue = node.nodeValue;
-  obj.descendantsCount =
-    typeof node.getElementsByTagName === 'function'
-      ? node.getElementsByTagName('*').length
+    tagName: node.tagName,
+    nodeName: node.nodeName,
+    nodeValue: node.nodeValue,
+    id: attributes.id ? attributes.id.value : undefined,
+    class: attributes.class ? attributes.class.value : undefined,
+    descendantsCount:
+      typeof node.getElementsByTagName === 'function'
+        ? node.getElementsByTagName('*').length
       : 0;
   const { attributes } = node;
   if (attributes) {
