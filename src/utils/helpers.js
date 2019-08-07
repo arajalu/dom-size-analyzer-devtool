@@ -15,17 +15,11 @@ function serializeDOMnode(node = {}) {
     descendantsCount:
       typeof node.getElementsByTagName === 'function'
         ? node.getElementsByTagName('*').length
-      : 0;
-  const { attributes } = node;
-  if (attributes) {
-    const { length } = attributes;
-    obj.attributes = new Array(length);
-    const arr = obj.attributes;
-    for (let i = 0; i < length; i += 1) {
-      const attribute = attributes[i];
-      arr[i] = [attribute.nodeName, attribute.nodeValue];
-    }
-  }
+        : 0,
+    attributes:
+      typeof attributes.entries === 'function' ? attributes.entries() : [],
+  };
+
   return obj;
 }
 
@@ -75,4 +69,25 @@ export function getGreenRedGradientInHSL(value) {
   if (value > MAX) value = MAX;
   const hue = ((1 - value / MAX) * 120).toString(10);
   return ['hsl(', hue, ',70%,50%)'].join('');
+}
+
+/**
+ * returns node description in 'Tagname#id.class' format
+ * @param {DOMnode} node
+ */
+export function generateNodeDescription(node = {}) {
+  const { class: className, id } = node;
+  return `${node.tagName}${id ? `#${id}` : ``}${
+    className ? `.${className}` : ``
+  }`;
+}
+
+/**
+ *
+ * @param {String} word
+ * @param {Number} count
+ * @param {String} [suffix='s']
+ */
+export function pluralizeWord(word, count, suffix = 's') {
+  return `${word}${count !== 1 ? suffix : ``}`;
 }

@@ -1,7 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
-import { getGreenRedGradientInHSL } from 'utils/helpers';
+import {
+  getGreenRedGradientInHSL,
+  generateNodeDescription,
+  pluralizeWord,
+} from 'utils/helpers';
 
 const Wrapper = styled.div``;
 
@@ -111,7 +115,13 @@ class DetailsPage extends React.PureComponent {
             this.appendNewParentNodeToHistory(childNode)
           }
         >
-          {`${childNode.tagName} - ${childNode.descendantsCount} descendants`}
+          {`${generateNodeDescription(childNode)}  `}
+          {childNode.descendantsCount ? (
+            <b>
+              - {childNode.descendantsCount}{' '}
+              {pluralizeWord('descendant', childNode.descendantsCount)}{' '}
+            </b>
+          ) : null}
         </ElementBar>
       ));
   }
@@ -119,15 +129,24 @@ class DetailsPage extends React.PureComponent {
   render() {
     const { parentNodeTransitionHistory } = this.state;
     const { domData } = this.props;
+    const currentParent = this.getCurrentParent();
     return (
       <Wrapper>
-        <Heading>Page contains {domData.descendantsCount} elements.</Heading>
+        <Heading>
+          <b>Total:</b> {domData.descendantsCount}{' '}
+          {pluralizeWord('element', domData.descendantsCount)}
+          {',    '}
+          <b>{generateNodeDescription(currentParent)}</b>:{' '}
+          {currentParent.descendantsCount}{' '}
+          {pluralizeWord('element', currentParent.descendantsCount)}
+        </Heading>
+        <Heading />
         {parentNodeTransitionHistory.length > 1 ? (
           <BackButton onClick={this.removeLastParentNodeFromHistory}>
             back
           </BackButton>
         ) : null}
-        {this.renderElementBars(this.getCurrentParent())}
+        {this.renderElementBars(currentParent)}
       </Wrapper>
     );
   }
