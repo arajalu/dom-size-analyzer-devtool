@@ -4,9 +4,17 @@ import styled from '@emotion/styled';
 
 const Wrapper = styled.div``;
 
+const Heading = styled.h1`
+  margin: 20px auto;
+  width: 100%;
+  font-weight: 300;
+  text-align: center;
+`;
+
 const BackButton = styled.button`
+  position: absolute;
+  top: 34px;
   margin: 5px 0px;
-  position: relative;
   cursor: pointer;
   display: block;
   background: #fff;
@@ -67,33 +75,37 @@ class DetailsPage extends React.PureComponent {
     return parentNodeTransitionHistory[parentNodeTransitionHistory.length - 1];
   }
 
-  renderChildren(parent) {
+  renderElementBars(parent) {
     const { domData } = this.props;
     const childNodesArray = parent
       ? parent.childNodes || []
       : domData.childNodes || [];
-    return childNodesArray.map(childNode => (
-      <ElementBar
-        onClick={() =>
-          childNode.descendantsCount &&
-          this.appendNewParentNodeToHistory(childNode)
-        }
-      >
-        {`${childNode.tagName} - ${childNode.descendantsCount} descendants`}
-      </ElementBar>
-    ));
+    return childNodesArray
+      .filter(childNode => childNode.tagName && childNode.tagName !== 'SCRIPT')
+      .map(childNode => (
+        <ElementBar
+          onClick={() =>
+            childNode.descendantsCount &&
+            this.appendNewParentNodeToHistory(childNode)
+          }
+        >
+          {`${childNode.tagName} - ${childNode.descendantsCount} descendants`}
+        </ElementBar>
+      ));
   }
 
   render() {
     const { parentNodeTransitionHistory } = this.state;
+    const { domData } = this.props;
     return (
       <Wrapper>
+        <Heading>Page contains {domData.descendantsCount} elements.</Heading>
         {parentNodeTransitionHistory.length > 1 ? (
           <BackButton onClick={this.removeLastParentNodeFromHistory}>
             back
           </BackButton>
         ) : null}
-        {this.renderChildren(this.getCurrentParent())}
+        {this.renderElementBars(this.getCurrentParent())}
       </Wrapper>
     );
   }
