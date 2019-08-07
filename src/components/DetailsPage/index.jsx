@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
+import { getGreenRedGradientInHSL } from 'utils/helpers';
 
 const Wrapper = styled.div``;
 
@@ -32,13 +33,33 @@ const ElementBar = styled.button`
   display: block;
   width: 100%;
   height: 20px;
-  background: gray;
   padding: 2px;
   margin-top: 2px;
   text-align: left;
   padding-left: 4px;
   border: none;
   border-radius: 4px;
+  background: ${props =>
+    props.descendantsCount
+      ? getGreenRedGradientInHSL(props.descendantsCount)
+      : `lightgray`};
+  ${props =>
+    props.descendantsCount
+      ? `:hover {
+            border: black;
+            border-style: solid;
+            border-width: 1px;
+          }`
+      : ``}
+  ${props =>
+    props.descendantsCount
+      ? `::after {
+      content: '>';
+      color: black;
+      float: right;
+      margin-right: 2px;
+    }`
+      : ``}
 `;
 
 class DetailsPage extends React.PureComponent {
@@ -84,6 +105,7 @@ class DetailsPage extends React.PureComponent {
       .filter(childNode => childNode.tagName && childNode.tagName !== 'SCRIPT')
       .map(childNode => (
         <ElementBar
+          descendantsCount={childNode.descendantsCount}
           onClick={() =>
             childNode.descendantsCount &&
             this.appendNewParentNodeToHistory(childNode)

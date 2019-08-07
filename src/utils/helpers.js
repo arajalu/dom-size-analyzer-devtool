@@ -62,3 +62,15 @@ export function sendEvent({ type = null, src, data }) {
   });
   window.dispatchEvent(cmdEvent);
 }
+
+/**
+ * Returns a color (HSL model) gradient between red and green. Example: 0 -> green, 1 -> red
+ * @param {Number} value a number between 0-1500
+ */
+export function getGreenRedGradientInHSL(value) {
+  const MAX = 1500;
+  // eslint-disable-next-line no-param-reassign
+  if (value > MAX) value = MAX;
+  const hue = ((1 - value / MAX) * 120).toString(10);
+  return ['hsl(', hue, ',70%,50%)'].join('');
+}
