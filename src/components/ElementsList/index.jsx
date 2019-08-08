@@ -43,10 +43,7 @@ const ElementBar = styled.button`
 function ElementsList({ node, onClickHandler }) {
   const childNodesArray = node ? node.childNodes : [];
   return childNodesArray
-    .filter(
-      childNode =>
-        childNode.tagName && !['SCRIPT', 'STYLE'].includes(childNode.tagName),
-    )
+    .filter(childNode => childNode.tagName)
     .map(childNode => {
       const { descendantsCount } = childNode;
       const nodeDescription = generateNodeDescription(childNode);
@@ -54,7 +51,7 @@ function ElementsList({ node, onClickHandler }) {
         <ElementBar
           descendantsCount={descendantsCount}
           onClick={() => descendantsCount && onClickHandler(childNode)}
-          key={`${nodeDescription}${descendantsCount}`}
+          // key={`${nodeDescription}${descendantsCount}`} NOTE:removed this key as it was causing duplicates TODO:find better key
         >
           {nodeDescription}{' '}
           {descendantsCount ? (
