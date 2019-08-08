@@ -14,10 +14,7 @@ const Heading = styled.h1`
   text-align: center;
 `;
 
-const BackButton = styled.button`
-  position: absolute;
-  top: 34px;
-  margin: 5px 0px;
+const Button = styled.button`
   cursor: pointer;
   display: block;
   background: #fff;
@@ -26,9 +23,24 @@ const BackButton = styled.button`
   box-shadow: 0px 1px 3px rgba(0%, 0%, 0%, 0.3);
   color: #000;
   border-radius: 4px;
+  padding: 4px;
+`;
+
+const BackButton = styled(Button)`
+  position: absolute;
+  top: 34px;
+  margin: 5px 0px;
   height: auto;
   width: 40px;
-  padding: 4px;
+`;
+
+const RefreshButton = styled(Button)`
+  position: absolute;
+  right: 10px;
+  top: 10px;
+  margin: 5px 0px;
+  height: auto;
+  width: 40px;
 `;
 
 class DetailsPage extends React.PureComponent {
@@ -76,7 +88,7 @@ class DetailsPage extends React.PureComponent {
         {pluralizeWord('element', domData.descendantsCount)}
         {parentNodeTransitionHistory.length > 1 ? (
           <React.Fragment>
-            {/* Current parents descendants count */}
+            {/* Current parent's descendants count */}
             {',    '}
             <b>{generateNodeDescription(currentParent)}</b>:{' '}
             {currentParent.descendantsCount}{' '}
@@ -98,10 +110,21 @@ class DetailsPage extends React.PureComponent {
 
   render() {
     const currentParent = this.getCurrentParent();
+    const { getDOMdetails, domData } = this.props;
     return (
       <Wrapper>
         <Heading>{this.headingText()}</Heading>
         {this.renderBackButton()}
+        <RefreshButton
+          onClick={() => {
+            this.setState(
+              { parentNodeTransitionHistory: [domData] },
+              getDOMdetails,
+            );
+          }}
+        >
+          &#8634;
+        </RefreshButton>
         <ElementsList
           node={currentParent}
           onClickHandler={this.appendNewParentNodeToHistory}
@@ -113,6 +136,7 @@ class DetailsPage extends React.PureComponent {
 
 DetailsPage.propTypes = {
   domData: PropTypes.object,
+  getDOMdetails: PropTypes.func,
 };
 
 export default DetailsPage;

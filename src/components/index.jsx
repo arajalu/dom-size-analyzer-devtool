@@ -60,7 +60,11 @@ class App extends Component {
       case domInfoLoadingStates.INIT:
         return <StartPage getDOMdetails={this.getDOMdetails} />;
       case domInfoLoadingStates.SUCCESS:
-        return domData && <DetailsPage domData={domData} />;
+        return (
+          domData && (
+            <DetailsPage domData={domData} getDOMdetails={this.getDOMdetails} />
+          )
+        );
       default:
         return null;
     }
