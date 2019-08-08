@@ -3,13 +3,17 @@ import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
 import { generateNodeDescription, pluralizeWord } from 'utils/helpers';
 
+import Breadcrumbs from '../Breadcrumbs';
 import ElementsList from '../ElementsList';
 
-const Wrapper = styled.div``;
+const Wrapper = styled.div`
+  margin: 2px 2px 20px 2px;
+`;
 
-const Heading = styled.h1`
+const Heading = styled.p`
   margin: 20px auto;
   width: 100%;
+  font-size: 15px;
   font-weight: 300;
   text-align: center;
 `;
@@ -28,7 +32,7 @@ const Button = styled.button`
 
 const BackButton = styled(Button)`
   position: absolute;
-  top: 34px;
+  top: 10px;
   margin: 5px 0px;
   height: auto;
   width: 40px;
@@ -55,6 +59,7 @@ class DetailsPage extends React.PureComponent {
     this.removeLastParentNodeFromHistory = this.removeLastParentNodeFromHistory.bind(
       this,
     );
+    this.setNthNodeAsCurrentNode = this.setNthNodeAsCurrentNode.bind(this);
   }
 
   appendNewParentNodeToHistory(node) {
@@ -69,6 +74,16 @@ class DetailsPage extends React.PureComponent {
         parentNodeTransitionHistory: [
           ...state.parentNodeTransitionHistory,
         ].slice(0, state.parentNodeTransitionHistory.length - 1),
+      }));
+  }
+
+  setNthNodeAsCurrentNode(n) {
+    const { parentNodeTransitionHistory } = this.state;
+    if (parentNodeTransitionHistory.length > n)
+      this.setState(state => ({
+        parentNodeTransitionHistory: [
+          ...state.parentNodeTransitionHistory,
+        ].slice(0, n),
       }));
   }
 
@@ -110,26 +125,33 @@ class DetailsPage extends React.PureComponent {
 
   render() {
     const currentParent = this.getCurrentParent();
+    const { parentNodeTransitionHistory } = this.state;
     const { getDOMdetails, domData } = this.props;
     return (
-      <Wrapper>
-        <Heading>{this.headingText()}</Heading>
-        {this.renderBackButton()}
-        <RefreshButton
-          onClick={() => {
-            this.setState(
-              { parentNodeTransitionHistory: [domData] },
-              getDOMdetails,
-            );
-          }}
-        >
-          &#8634;
-        </RefreshButton>
-        <ElementsList
-          node={currentParent}
-          onClickHandler={this.appendNewParentNodeToHistory}
+      <React.Fragment>
+        <Wrapper>
+          <Heading>{this.headingText()}</Heading>
+          {this.renderBackButton()}
+          <RefreshButton
+            onClick={() => {
+              this.setState(
+                { parentNodeTransitionHistory: [domData] },
+                getDOMdetails,
+              );
+            }}
+          >
+            &#8634;
+          </RefreshButton>
+          <ElementsList
+            node={currentParent}
+            onClickHandler={this.appendNewParentNodeToHistory}
+          />
+        </Wrapper>
+        <Breadcrumbs
+          parentNodeTransitionHistory={parentNodeTransitionHistory}
+          setNthNodeAsCurrentNode={this.setNthNodeAsCurrentNode}
         />
-      </Wrapper>
+      </React.Fragment>
     );
   }
 }

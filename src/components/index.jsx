@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { render } from 'react-dom';
+import { Global, css } from '@emotion/core';
 import StartPage from './StartPage';
 import DetailsPage from './DetailsPage';
 
@@ -71,7 +72,20 @@ class App extends Component {
   }
 
   render() {
-    return this.renderView();
+    return (
+      <React.Fragment>
+        {
+          <Global
+            styles={css`
+              body {
+                margin: 0px;
+              }
+            `}
+          />
+        }
+        {this.renderView()}
+      </React.Fragment>
+    );
   }
 }
 
