@@ -1,11 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import styled from '@emotion/styled';
-import {
-  getGreenRedGradientInHSL,
-  generateNodeDescription,
-  pluralizeWord,
-} from 'utils/helpers';
+import { generateNodeDescription, pluralizeWord } from 'utils/helpers';
+
+import ElementsList from '../ElementsList';
 
 const Wrapper = styled.div``;
 
@@ -31,39 +29,6 @@ const BackButton = styled.button`
   height: auto;
   width: 40px;
   padding: 4px;
-`;
-
-const ElementBar = styled.button`
-  display: block;
-  width: 100%;
-  height: 20px;
-  padding: 2px;
-  margin-top: 2px;
-  text-align: left;
-  padding-left: 4px;
-  border: none;
-  border-radius: 4px;
-  background: ${props =>
-    props.descendantsCount
-      ? getGreenRedGradientInHSL(props.descendantsCount)
-      : `lightgray`};
-  ${props =>
-    props.descendantsCount
-      ? `:hover {
-            border: black;
-            border-style: solid;
-            border-width: 1px;
-          }`
-      : ``}
-  ${props =>
-    props.descendantsCount
-      ? `::after {
-      content: '>';
-      color: black;
-      float: right;
-      margin-right: 2px;
-    }`
-      : ``}
 `;
 
 class DetailsPage extends React.PureComponent {
@@ -100,53 +65,47 @@ class DetailsPage extends React.PureComponent {
     return parentNodeTransitionHistory[parentNodeTransitionHistory.length - 1];
   }
 
-  renderElementBars(parent) {
+  headingText() {
     const { domData } = this.props;
-    const childNodesArray = parent
-      ? parent.childNodes || []
-      : domData.childNodes || [];
-    return childNodesArray
-      .filter(childNode => childNode.tagName && childNode.tagName !== 'SCRIPT')
-      .map(childNode => (
-        <ElementBar
-          descendantsCount={childNode.descendantsCount}
-          onClick={() =>
-            childNode.descendantsCount &&
-            this.appendNewParentNodeToHistory(childNode)
-          }
-        >
-          {`${generateNodeDescription(childNode)}  `}
-          {childNode.descendantsCount ? (
-            <b>
-              - {childNode.descendantsCount}{' '}
-              {pluralizeWord('descendant', childNode.descendantsCount)}{' '}
-            </b>
-          ) : null}
-        </ElementBar>
-      ));
+    const { parentNodeTransitionHistory } = this.state;
+    const currentParent = this.getCurrentParent();
+    return (
+      <React.Fragment>
+        {/* Total count text */}
+        <b>Total:</b> {domData.descendantsCount}{' '}
+        {pluralizeWord('element', domData.descendantsCount)}
+        {parentNodeTransitionHistory.length > 1 ? (
+          <React.Fragment>
+            {/* Current parents descendants count */}
+            {',    '}
+            <b>{generateNodeDescription(currentParent)}</b>:{' '}
+            {currentParent.descendantsCount}{' '}
+            {pluralizeWord('element', currentParent.descendantsCount)}
+          </React.Fragment>
+        ) : null}
+      </React.Fragment>
+    );
+  }
+
+  renderBackButton() {
+    const { parentNodeTransitionHistory } = this.state;
+    return parentNodeTransitionHistory.length > 1 ? (
+      <BackButton onClick={this.removeLastParentNodeFromHistory}>
+        back
+      </BackButton>
+    ) : null;
   }
 
   render() {
-    const { parentNodeTransitionHistory } = this.state;
-    const { domData } = this.props;
     const currentParent = this.getCurrentParent();
     return (
       <Wrapper>
-        <Heading>
-          <b>Total:</b> {domData.descendantsCount}{' '}
-          {pluralizeWord('element', domData.descendantsCount)}
-          {',    '}
-          <b>{generateNodeDescription(currentParent)}</b>:{' '}
-          {currentParent.descendantsCount}{' '}
-          {pluralizeWord('element', currentParent.descendantsCount)}
-        </Heading>
-        <Heading />
-        {parentNodeTransitionHistory.length > 1 ? (
-          <BackButton onClick={this.removeLastParentNodeFromHistory}>
-            back
-          </BackButton>
-        ) : null}
-        {this.renderElementBars(currentParent)}
+        <Heading>{this.headingText()}</Heading>
+        {this.renderBackButton()}
+        <ElementsList
+          node={currentParent}
+          onClickHandler={this.appendNewParentNodeToHistory}
+        />
       </Wrapper>
     );
   }
