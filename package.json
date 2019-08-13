@@ -1,13 +1,13 @@
 {
-  "name": "DomCount",
+  "name": "dom-size-analyzer",
   "version": "0.0.1",
-  "description": "Google Chrome DevTools Extension for analyzing DOM elements count",
+  "description": "Google Chrome DevTools Extension for analyzing DOM size",
   "scripts": {
     "//": "**** running production build due to following error while running in dev mode 'Refused to evaluate a string as JavaScript because 'unsafe-eval' is not an allowed source of script in the following Content Security Policy directive'",
     "webpack:watch": "webpack --config ./webpack.config.js  --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Anand Rajalu <arajalu@gmail.com>",
+  "author": "Anand Rajalu",
   "devDependencies": {
     "autoprefixer": "^7.1.1",
     "babel-core": "^6.25.0",
