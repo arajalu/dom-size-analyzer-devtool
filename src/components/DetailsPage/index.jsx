@@ -140,7 +140,7 @@ class DetailsPage extends React.PureComponent {
               );
             }}
           >
-            &#8634;
+            {'\u21BA'}
           </RefreshButton>
           <ElementsList
             node={currentParent}
