@@ -1,13 +1,37 @@
-import { GET_DOM_DETAILS } from '../constants/events';
+import {
+  GET_DOM_DETAILS,
+  HIGHLIGHT_ELEMENT,
+  REMOVE_HIGHLIGHT,
+} from '../constants/events';
 import { getDOMdetails, sendEvent } from '../utils/helpers';
 
-window.addEventListener('commandEvent', event => {
-  handleEvent(event);
-});
+function createHighlighterOverlay() {
+  const overlay = document.createElement('div');
+  document.body.appendChild(overlay);
+  overlay.setAttribute('id', 'domCountAnalyzerOverlay');
+  overlay.style.zIndex = '9999999';
+  overlay.style.background = 'rgba(112, 163, 255, 0.46)';
+  overlay.style.display = `none`;
+}
 
-const eventHandlerMapping = {
-  [GET_DOM_DETAILS]: getDOMdetails,
-};
+function hideHighlighter() {
+  const overlay = document.querySelector('#domCountAnalyzerOverlay');
+  overlay.style.display = `none`;
+}
+
+/**
+ * places highlighter overlay over the target DOM element
+ * @param {DOMElement} targetElement
+ */
+function highlightElement(targetElement) {
+  const overlay = document.querySelector('#domCountAnalyzerOverlay');
+  const rect = targetElement.getBoundingClientRect();
+  overlay.style.display = `block`;
+  overlay.style.top = `${rect.top}px`;
+  overlay.style.left = `${rect.left}px`;
+  overlay.style.width = `${rect.width}px`;
+  overlay.style.height = `${rect.height}px`;
+}
 
 function handleEvent(event) {
   const { detail } = event;
@@ -18,3 +42,17 @@ function handleEvent(event) {
     sendEvent({ src: 'injected-script', data: result });
   }
 }
+
+const eventHandlerMapping = {
+  [GET_DOM_DETAILS]: getDOMdetails,
+  [HIGHLIGHT_ELEMENT]: highlightElement,
+  [REMOVE_HIGHLIGHT]: hideHighlighter,
+};
+
+/**
+ * init
+ */
+createHighlighterOverlay();
+window.addEventListener('commandEvent', event => {
+  handleEvent(event);
+});
