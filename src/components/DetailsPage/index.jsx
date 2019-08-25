@@ -126,7 +126,7 @@ class DetailsPage extends React.PureComponent {
   render() {
     const currentParent = this.getCurrentParent();
     const { parentNodeTransitionHistory } = this.state;
-    const { getDOMdetails, domData } = this.props;
+    const { getDOMdetails, domData, ...otherProps } = this.props;
     return (
       <React.Fragment>
         <Wrapper>
@@ -145,6 +145,7 @@ class DetailsPage extends React.PureComponent {
           <ElementsList
             node={currentParent}
             onClickHandler={this.appendNewParentNodeToHistory}
+            {...otherProps}
           />
         </Wrapper>
         <Breadcrumbs

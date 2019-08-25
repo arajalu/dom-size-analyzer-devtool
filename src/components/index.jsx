@@ -4,7 +4,11 @@ import { Global, css } from '@emotion/core';
 import StartPage from './StartPage';
 import DetailsPage from './DetailsPage';
 
-import { GET_DOM_DETAILS } from '../constants/events';
+import {
+  GET_DOM_DETAILS,
+  HIGHLIGHT_ELEMENT,
+  REMOVE_HIGHLIGHT,
+} from '../constants/events';
 
 const domInfoLoadingStates = {
   INIT: null,
@@ -30,11 +34,13 @@ class App extends Component {
     backgroundPageConnection.onMessage.addListener(message => {
       // Data has arrived in devtools page!!
       console.log('event recvd!!!', message);
-      const { data: domData } = message || {};
-      this.setState({
-        domInfoLoadingState: domInfoLoadingStates.SUCCESS,
-        domData,
-      });
+      if (message.type === GET_DOM_DETAILS) {
+        const { data: domData } = message || {};
+        this.setState({
+          domInfoLoadingState: domInfoLoadingStates.SUCCESS,
+          domData,
+        });
+      }
     });
   }
 
@@ -44,6 +50,7 @@ class App extends Component {
         console.log('sending get dom details event');
         chrome.tabs.sendMessage(tabs[0].id, {
           type: GET_DOM_DETAILS,
+          uniqueElementIndex: 0,
         });
       });
     }
@@ -51,6 +58,27 @@ class App extends Component {
       { domInfoLoadingState: domInfoLoadingStates.LOADING },
       sendGetDOMdetailsEvent,
     );
+  }
+
+  sendHighlightElementEvent(uniqueElementIndex) {
+    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+      console.log('sending highlight element event');
+      chrome.tabs.sendMessage(tabs[0].id, {
+        type: HIGHLIGHT_ELEMENT,
+        data: {
+          uniqueElementIndex,
+        },
+      });
+    });
+  }
+
+  sendRemoveHighlightEvent() {
+    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+      console.log('sending remove highlight event');
+      chrome.tabs.sendMessage(tabs[0].id, {
+        type: REMOVE_HIGHLIGHT,
+      });
+    });
   }
 
   renderView() {
@@ -63,7 +91,12 @@ class App extends Component {
       case domInfoLoadingStates.SUCCESS:
         return (
           domData && (
-            <DetailsPage domData={domData} getDOMdetails={this.getDOMdetails} />
+            <DetailsPage
+              domData={domData}
+              sendHighlightElementEvent={this.sendHighlightElementEvent}
+              sendRemoveHighlightEvent={this.sendRemoveHighlightEvent}
+              getDOMdetails={this.getDOMdetails}
+            />
           )
         );
       default:

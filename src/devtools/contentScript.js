@@ -23,5 +23,5 @@ window.addEventListener('commandEvent', event => {
  */
 chrome.runtime.onMessage.addListener(message => {
   // Send the command to the page through a custom event
-  sendEvent({ type: message.type, src: 'content-script' });
+  sendEvent({ type: message.type, src: 'content-script', data: message.data });
 });

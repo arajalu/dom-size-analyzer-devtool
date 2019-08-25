@@ -40,7 +40,12 @@ const ElementBar = styled.button`
       : ``}
 `;
 
-function ElementsList({ node, onClickHandler }) {
+function ElementsList({
+  node,
+  onClickHandler,
+  sendHighlightElementEvent,
+  sendRemoveHighlightEvent,
+}) {
   const childNodesArray = node ? node.childNodes : [];
   return childNodesArray
     .filter(childNode => childNode.tagName)
@@ -51,6 +56,10 @@ function ElementsList({ node, onClickHandler }) {
         <ElementBar
           descendantsCount={descendantsCount}
           onClick={() => descendantsCount && onClickHandler(childNode)}
+          onMouseOver={() => sendHighlightElementEvent(childNode.uniqueIndex)}
+          onFocus={() => sendHighlightElementEvent(childNode.uniqueIndex)}
+          onMouseLeave={sendRemoveHighlightEvent}
+          onBlur={sendRemoveHighlightEvent}
           // key={`${nodeDescription}${descendantsCount}`} NOTE:removed this key as it was causing duplicates TODO:find better key
         >
           {nodeDescription}{' '}
@@ -68,6 +77,8 @@ function ElementsList({ node, onClickHandler }) {
 ElementsList.propTypes = {
   node: PropTypes.object,
   onClickHandler: PropTypes.func,
+  sendHighlightElementEvent: PropTypes.func,
+  sendRemoveHighlightEvent: PropTypes.func,
 };
 
 export default memo(ElementsList);

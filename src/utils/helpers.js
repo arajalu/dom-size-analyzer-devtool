@@ -1,9 +1,12 @@
+import { GLOBAL_INFO_OBJECT } from '../constants/common';
+
 /**
  * serializes DOM nodes attributes to an object
  * @param {DOMnode} node
+ * @param {object} additionalData
  * @returns {object}
  */
-function serializeDOMnode(node = {}) {
+function serializeDOMnode(node = {}, additionalData) {
   const { attributes = {} } = node;
   const obj = {
     nodeType: node.nodeType,
@@ -18,6 +21,7 @@ function serializeDOMnode(node = {}) {
         : 0,
     attributes:
       typeof attributes.entries === 'function' ? attributes.entries() : [],
+    ...additionalData,
   };
 
   return obj;
@@ -31,7 +35,8 @@ function serializeDOMnode(node = {}) {
 export function getDOMdetails(node) {
   // eslint-disable-next-line no-param-reassign
   node = node || document.body;
-  const obj = serializeDOMnode(node);
+  const uniqueIndex = window[GLOBAL_INFO_OBJECT].insertIntoElementsArray(node);
+  const obj = serializeDOMnode(node, { uniqueIndex });
   const { childNodes } = node;
   if (childNodes) {
     const { length } = childNodes;
