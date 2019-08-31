@@ -11,7 +11,7 @@ According to https://developers.google.com/web/tools/lighthouse/audits/dom-size,
 We can use this devtool to analyze a page's DOM to easily find out which parts of the page are adding weight to it.
 
 ### TODO ###
-* Highlighting the hovered element on page
+* ~~Highlighting the hovered element on page~~
 
 ### Known Issues ###
 * Background and Contenscript are not getting injected into existing tabs after installation. Please reload the required tabs after installation for the extension to properly.
