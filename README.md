@@ -14,7 +14,7 @@ We can use this devtool to analyze a page's DOM to easily find out which parts o
 * ~~Highlighting the hovered element on page~~
 
 ### Known Issues ###
-* Background and Contenscript are not getting injected into existing tabs after installation. Please reload the required tabs after installation for the extension to properly.
+* ~~Background and Contenscript are not getting injected into existing tabs after installation. Please reload the required tabs after installation for the extension to properly.~~
 
 ### Install dependencies ###
 
