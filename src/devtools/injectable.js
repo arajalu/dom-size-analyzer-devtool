@@ -48,11 +48,11 @@ function highlightElementHandler({ uniqueElementIndex }) {
 
 function handleEvent(event) {
   const { detail } = event;
-  const { src, type, data } = detail || {};
+  const { src, type, data, tabID } = detail || {};
   if (src !== 'injected-script' && type in eventHandlerMapping) {
     const result = eventHandlerMapping[type](data);
     console.log('inj', result);
-    sendEvent({ src: 'injected-script', type, data: result });
+    sendEvent({ src: 'injected-script', tabID, type, data: result });
   }
 }
 
@@ -70,6 +70,7 @@ const eventHandlerMapping = {
   [GET_DOM_DETAILS]: initializeElementsArrayAndReturnDOMdetails,
   [HIGHLIGHT_ELEMENT]: highlightElementHandler,
   [REMOVE_HIGHLIGHT]: hideHighlighter,
+  ping: () => sendEvent({ src: 'injected-script', type: 'pong' }),
 };
 
 /**

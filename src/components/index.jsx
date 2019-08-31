@@ -23,18 +23,45 @@ class App extends Component {
     this.state = {
       domData: null,
       domInfoLoadingState: domInfoLoadingStates.INIT,
+      contentScriptInjected: null,
+      tabID: undefined,
     };
     this.getDOMdetails = this.getDOMdetails.bind(this);
+    this.sendHighlightElementEvent = this.sendHighlightElementEvent.bind(this);
+    this.sendRemoveHighlightEvent = this.sendRemoveHighlightEvent.bind(this);
   }
 
   componentDidMount() {
+    this.setupBackgroundPageEventListener();
+    /**
+     * sending 'ping' event immediately after add listener,
+     * if contentscript is injected, it should send back a pong event immediately
+     */
+    this.sendEventToActiveTab('ping');
+    /**
+     * if no event (including 'pong') is not received within 500ms
+     */
+    setTimeout(() => {
+      if (this.state.contentScriptInjected === null)
+        this.setState({ contentScriptInjected: false });
+    }, 500);
+  }
+
+  setupBackgroundPageEventListener() {
     const backgroundPageConnection = chrome.runtime.connect({
       name: 'devtools-page',
     });
     backgroundPageConnection.onMessage.addListener(message => {
-      // Data has arrived in devtools page!!
       console.log('event recvd!!!', message);
-      if (message.type === GET_DOM_DETAILS) {
+      /**
+       * received an event from bg script, scripts must have been injected!
+       */
+      this.setState({ contentScriptInjected: true });
+      if (
+        message.type === GET_DOM_DETAILS &&
+        this.state.tabID &&
+        message.tabID === this.state.tabID
+      ) {
         const { data: domData } = message || {};
         this.setState({
           domInfoLoadingState: domInfoLoadingStates.SUCCESS,
@@ -44,41 +71,31 @@ class App extends Component {
     });
   }
 
-  getDOMdetails() {
-    function sendGetDOMdetailsEvent() {
-      chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-        console.log('sending get dom details event');
-        chrome.tabs.sendMessage(tabs[0].id, {
-          type: GET_DOM_DETAILS,
-          uniqueElementIndex: 0,
-        });
+  sendEventToActiveTab(type, data) {
+    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
+      console.log('sending event to active tab');
+      const tabID = tabs[0].id;
+      this.setState({ tabID });
+      chrome.tabs.sendMessage(tabID, {
+        type,
+        data,
+        tabID,
       });
-    }
-    this.setState(
-      { domInfoLoadingState: domInfoLoadingStates.LOADING },
-      sendGetDOMdetailsEvent,
+    });
+  }
+
+  getDOMdetails() {
+    this.setState({ domInfoLoadingState: domInfoLoadingStates.LOADING }, () =>
+      this.sendEventToActiveTab(GET_DOM_DETAILS),
     );
   }
 
   sendHighlightElementEvent(uniqueElementIndex) {
-    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-      console.log('sending highlight element event');
-      chrome.tabs.sendMessage(tabs[0].id, {
-        type: HIGHLIGHT_ELEMENT,
-        data: {
-          uniqueElementIndex,
-        },
-      });
-    });
+    this.sendEventToActiveTab(HIGHLIGHT_ELEMENT, { uniqueElementIndex });
   }
 
   sendRemoveHighlightEvent() {
-    chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-      console.log('sending remove highlight event');
-      chrome.tabs.sendMessage(tabs[0].id, {
-        type: REMOVE_HIGHLIGHT,
-      });
-    });
+    this.sendEventToActiveTab(REMOVE_HIGHLIGHT);
   }
 
   renderView() {

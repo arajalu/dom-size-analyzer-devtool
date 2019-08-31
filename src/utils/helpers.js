@@ -55,11 +55,12 @@ export function getDOMdetails(node) {
  * @param {String} options.type - To perform action based on the specified event type
  * @param {String} options.src
  * @param {any} options.data
+ * @param {number} [options.tabID]
  * @returns {void}
  */
-export function sendEvent({ type = null, src, data }) {
+export function sendEvent({ type = null, src, data, tabID }) {
   const cmdEvent = new CustomEvent('commandEvent', {
-    detail: { type, src, data },
+    detail: { type, src, data, tabID },
   });
   window.dispatchEvent(cmdEvent);
 }
