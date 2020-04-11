@@ -2,6 +2,9 @@
 
 Simple Google Chrome devtool to analyze a page's DOM size.
 
+
+![](gifs/demo.gif)
+
 ### Motivation ###
 According to https://developers.google.com/web/tools/lighthouse/audits/dom-size, an optimal DOM tree has the following properties:
 * Has less than 1500 nodes total.
