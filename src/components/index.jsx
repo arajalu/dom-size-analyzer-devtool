@@ -100,6 +100,13 @@ class App extends Component {
 
   renderView() {
     const { domData, domInfoLoadingState } = this.state;
+    if (this.state.contentScriptInjected === false) {
+      return (
+        <p>
+          <b>Dom Size Analyzer</b> was unable to connect to this page.
+        </p>
+      );
+    }
     switch (domInfoLoadingState) {
       case domInfoLoadingStates.LOADING:
         return 'loading...';
